@@ -6,6 +6,7 @@ import com.example.demo.theme.domain.ThemeColor;
 import com.example.demo.theme.domain.ThemeColorRepository;
 import com.example.demo.theme.domain.ThemeRepository;
 import com.example.demo.theme.dto.ThemeDeleteDto;
+import com.example.demo.theme.dto.ThemeUpdateDto;
 import com.example.demo.theme.dto.ThemeUpsertDto;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserRepository;
@@ -31,6 +32,16 @@ public class ThemeServiceImpl implements ThemeService {
     private final ThemeRepository themeRepository;
     private final Map<Long, List<String>> colorMap = new HashMap<>();
     private final EntityManager entityManager;
+
+    @Override
+    @Transactional
+    public void updateTheme(ThemeUpdateDto themeUpdateDto) {
+        Optional<User> user = userRepository.findById(themeUpdateDto.getUserId());
+        Optional<Theme> theme = themeRepository.findById(themeUpdateDto.getThemeId());
+
+        user.get().setTheme(theme.get());
+
+    }
 
     @Override
     @Transactional
@@ -124,11 +135,11 @@ public class ThemeServiceImpl implements ThemeService {
         //if (myColors.size() > defaultThemeColors.size()){
 
         for (ThemeColor mycolor : myColors){
-            mycolor.setColor(colors.get(i));
-            i++;
-            if (i > colors.size()){
-                i = 0;
-            }
+            mycolor.setColor(colors.get(0));
+//            i++;
+//            if (i > colors.size()){
+//                i = 0;
+//            }
         }
 
 
