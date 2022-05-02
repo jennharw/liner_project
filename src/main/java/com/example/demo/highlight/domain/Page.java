@@ -20,5 +20,5 @@ public class Page {
 
     //OneToMany
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "page", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
-    private Highlight highlight;
+    private List<Highlight> highlights;
 }
