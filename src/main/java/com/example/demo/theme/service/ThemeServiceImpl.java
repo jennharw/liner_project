@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.demo.config.BaseResponseStatus.BASETHEME;
@@ -31,7 +28,7 @@ public class ThemeServiceImpl implements ThemeService {
     private final UserRepository userRepository;
     private final ThemeColorRepository themeColorRepository;
     private final ThemeRepository themeRepository;
-    private final Map<Long, List<String>> colorMap = new HashMap<>();
+    private Map<Theme, Set<String>> colorMap = new HashMap<>();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -55,70 +52,64 @@ public class ThemeServiceImpl implements ThemeService {
 //                entityManager.createQuery("SELECT s from ThemeColor s where s.id = ?", ThemeColor.class);
 //        List<ThemeColor> themeColors = schoolQuery.getResultList();
 
-
-        List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
-        List<String> colors = List.of(themeUpsertDto.getTheme().getColors());
-        int i = 0 ;
-        int j = 0 ;
-        for (ThemeColor themeColor : themeColors){
-            themeColor.setColor(colors.get(i));
-            i++;
-            j++;
-            if (i >= colors.size()) {
-                i = 0;
-            }
-        } //bulk update ?
-
-        j++;
-        if (j < colors.size()) {
-            for (int k = j; k <= colors.size();k++){
-
-                ThemeColor themeColor = ThemeColor.builder()
-                        .theme(theme.get())
-                        .orderOfColor(k)
-                        .color(colors.get(k-1))
-                        .build();
-
-                entityManager.persist(themeColor);
-            }
+        List<Set<String>> colorValues = new ArrayList<>();
+        if (colorMap.isEmpty()) {
+            List<ThemeColor> themeColorList = themeColorRepository.findAll();
+            colorMap = themeColorList.stream()
+                    .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toSet())));
+            colorMap.forEach(
+                    (key, value) ->
+                            colorValues.add(value)
+            );
         }
+//        System.out.println(colorMap);
+        Set<String> colors_set = Set.of(themeUpsertDto.getTheme().getColors());
 
-        //em.flush(); //bulk insert
-        //두가지 경우
+        if (colorValues.contains(colors_set)) {
+            Long themeId = getKey(colorMap, colors_set);
+            user.get().setTheme(Theme.builder().id(themeId).build());
+        } else{
 
-//        List<ThemeColor> themeColorList = themeColorRepository.findAll();
-//        if (colorMap.isEmpty()) {
-//            Map<Theme, List<String>> colorMap =
-//            themeColorList.stream()
-//                    .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toList())));
-//
-//        }
-//
-//        List<List<String>> colorValues = null;
-//        colorMap.forEach(
-//                (key, value) ->
-//                        colorValues.add(value)
-//                               );
-//
+            List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
+            List<String> colors = List.of(themeUpsertDto.getTheme().getColors());
+            int i = 0 ;
+            int j = 0 ;
+            for (ThemeColor themeColor : themeColors){
+                themeColor.setColor(colors.get(i));
+                i++;
+                j++;
+                if (i >= colors.size()) {
+                    i = 0;
+                }
+            } //bulk update ?
 
+            j++;
+            if (j < colors.size()) {
+                for (int k = j; k <= colors.size();k++){
 
-//        if (colorValues.contains(colors)) {
-//            Long themeId = getKey(colorMap, colors);
-//            user.get().setTheme(Theme.builder().id(themeId).build());
-//        }
+                    ThemeColor themeColor = ThemeColor.builder()
+                            .theme(theme.get())
+                            .orderOfColor(k)
+                            .color(colors.get(k-1))
+                            .build();
+
+                    entityManager.persist(themeColor);
+                }
+            }
+            //em.flush(); //bulk insert
+            //두가지 경우
+            colorMap.put(Theme.builder().id(themeUpsertDto.getTheme().getId()).build(), colors_set);
+
+        }
         //조합 중복안되게
-
-
-       // colorMap.put(themeUpsertDto.getTheme().getId(), colors);
-
 
 
     }
 
-    public <K, V> K getKey(Map<K, V> map, V value) {
-        for (Map.Entry<K, V> entry : map.entrySet()) {
+    public <K, V> Long getKey(Map<Theme, Set<String>> map, Set<String> value) {
+        for (Map.Entry<Theme, Set<String>> entry : map.entrySet()) {
             if (entry.getValue().equals(value)) {
-                return entry.getKey();
+                return entry.getKey().getId();
             }
         }
         return null;
