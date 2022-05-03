@@ -18,12 +18,15 @@ public class ThemeColor {
     private Long id;
 
 
-    private Long themeId;
+//    private Long themeId;
+    @ManyToOne
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
 
     private String color;
 
-    private int order; // 테마 내 색 순서
+    private int orderOfColor; // 테마 내 색 순서
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "highlight", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
-    private List<Highlight> highlights;
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "themeColor", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
+//    private List<Highlight> highlights;
 }

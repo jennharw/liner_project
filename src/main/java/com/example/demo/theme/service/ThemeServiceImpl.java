@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,9 @@ public class ThemeServiceImpl implements ThemeService {
     private final ThemeColorRepository themeColorRepository;
     private final ThemeRepository themeRepository;
     private final Map<Long, List<String>> colorMap = new HashMap<>();
-    private final EntityManager entityManager;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -67,7 +70,7 @@ public class ThemeServiceImpl implements ThemeService {
         if (!colors.isEmpty()) {
             for (String color:colors){
                 ThemeColor themeColor = ThemeColor.builder()
-                        .themeId(themeUpsertDto.getTheme().getId())
+                        .theme(theme)
                         .color(color)
                         .build();
                 entityManager.persist(themeColor);
@@ -81,9 +84,9 @@ public class ThemeServiceImpl implements ThemeService {
 
         List<ThemeColor> themeColorList = themeColorRepository.findAll();
         if (colorMap.isEmpty()) {
-            Map<Long, List<String>> colorMap =
+            Map<Theme, List<String>> colorMap =
             themeColorList.stream()
-                    .collect(groupingBy(ThemeColor::getThemeId, mapping(ThemeColor::getColor, toList())));
+                    .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toList())));
 
         }
 

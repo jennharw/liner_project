@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-@Builder
 @Entity
 @Data
 @NoArgsConstructor
@@ -31,4 +30,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "theme_id")
     private Theme theme;
+
+    public User(String username, String encode, String nickname) {
+        this.userId = username;
+        this.password = encode;
+        this.nickname = nickname;
+    }
 }

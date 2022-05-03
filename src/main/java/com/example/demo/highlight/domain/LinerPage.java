@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-public class Page {
+public class LinerPage {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -19,6 +19,6 @@ public class Page {
     private String pageUrl;
 
     //OneToMany
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "page", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "linerPage", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
     private List<Highlight> highlights;
 }

@@ -1,9 +1,9 @@
 package com.example.demo.config;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.demo.user.domain.UserDetailsImpl;
 import com.example.demo.user.dto.LoginReq;
 import com.example.demo.user.domain.UserDetailsServiceImpl;
+import com.example.demo.user.service.UserDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;

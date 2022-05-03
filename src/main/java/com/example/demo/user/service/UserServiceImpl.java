@@ -27,11 +27,11 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("중복된 사용자 ID 가 존재합니다.");
         }
 
-        User user = User.builder()
-                        .userId(signupReq.getUsername())
-                        .password(passwordEncoder.encode(signupReq.getPassword()))
-                        .nickname(signupReq.getNickname())
-                        .build();
+        User user = new User (
+                        signupReq.getUsername(),
+                        passwordEncoder.encode(signupReq.getPassword()),
+                        signupReq.getNickname()
+                        );
         userRepository.save(user);
     }
 

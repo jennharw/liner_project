@@ -24,5 +24,7 @@ public class Theme {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "theme", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
     private List<User> userId; //OnetoMany
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "theme", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
+    private List<ThemeColor> themeColors; //OnetoMany
 
 }

@@ -10,7 +10,8 @@ import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 public class Highlight extends AbstractEntity{
@@ -25,8 +26,8 @@ public class Highlight extends AbstractEntity{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "page_id")
-    private Page page; // highlight 를 조회할때
+    @JoinColumn(name = "linerPage_id")
+    private LinerPage linerPage; // highlight 를 조회할때
 
     //현재 설정된 테마 내 색 중 하나 onetomany?
     @ManyToOne
@@ -42,7 +43,7 @@ public class Highlight extends AbstractEntity{
         return HighlightResponseDto.builder()
                 .highlightId(id)
                 .userId(user.getId())
-                .pageId(page.getId())
+                .pageId(linerPage.getId())
                 .colorHex(color.getColor())
                 .text(text)
                 .build();

@@ -3,7 +3,7 @@ package com.example.demo.highlight.service;
 import com.example.demo.config.exception.BaseException;
 import com.example.demo.highlight.domain.Highlight;
 import com.example.demo.highlight.domain.HighlightRepository;
-import com.example.demo.highlight.domain.Page;
+import com.example.demo.highlight.domain.LinerPage;
 import com.example.demo.highlight.domain.PageRepository;
 import com.example.demo.highlight.dto.*;
 import com.example.demo.theme.domain.Theme;
@@ -13,6 +13,7 @@ import com.example.demo.theme.domain.ThemeRepository;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +40,11 @@ public class HighlightServiceImpl implements HighlightService {
 
         Optional<User> user = userRepository.findById(highlightCreateDto.getUserId());
 
-        Optional<Page> page = pageRepository.findByPageUrl(highlightCreateDto.getPageUrl());
+        Optional<LinerPage> page = pageRepository.findByPageUrl(highlightCreateDto.getPageUrl());
 
-        Page userpage = null;
+        LinerPage userpage = null;
         if (page.isEmpty()) {
-            Page page_ = Page.builder().pageUrl(highlightCreateDto.getPageUrl()).build();
+            LinerPage page_ = LinerPage.builder().pageUrl(highlightCreateDto.getPageUrl()).build();
             userpage = pageRepository.save(page_);
         }else {
             userpage = page.get();
@@ -59,7 +60,7 @@ public class HighlightServiceImpl implements HighlightService {
 
             Highlight highlight = Highlight.builder()
                     .user(user.get())
-                    .page(userpage)
+                    .linerPage(userpage)
                     .color(userThemeColors.get())
                     .text(highlightCreateDto.getText())
                     .build();
@@ -104,7 +105,8 @@ public class HighlightServiceImpl implements HighlightService {
     @Override
     @Transactional(readOnly = true)
     public List<HighlightResponseDto> readHighlightInPage(HighlightReadInPageDto highlightReadDto, Pageable pageable) {
-        List<Highlight> highlights = highlightRepository.findAllByUserIdAndByPageIdAndIsDeletedIsFalseOrderByUpdatedAtDesc(pageable, highlightReadDto.getUserId(), highlightReadDto.getPageId());
+        Optional<LinerPage> page = pageRepository.findByPageUrl(highlightReadDto.getPageUrl());
+        Page<Highlight> highlights = highlightRepository.findHighlight(highlightReadDto.getUserId(), page.get().getId() ,pageable);
         return highlights.stream()
                 .map(Highlight::toDto).collect(toList());
     }
@@ -115,10 +117,10 @@ public class HighlightServiceImpl implements HighlightService {
         List<Highlight> highlights = highlightRepository.findAllByUserIdAndIsDeletedIsFalseAndOrderByUpdatedAtDesc(pageable, highlightReadDto.getUserId());
 
         //
-        Map<Page, List<HighlightResponseDto>> highlightPerPage =
+        Map<LinerPage, List<HighlightResponseDto>> highlightPerPage =
                 highlights.stream()
                 //.map(Highlight::toDto)
-                    .collect(groupingBy(Highlight::getPage, mapping(Highlight::toDto, toList())))
+                    .collect(groupingBy(Highlight::getLinerPage, mapping(Highlight::toDto, toList())))
                     ;
         List<HighlightReadResponseDto> highlightReadResponseDtos = null;
         highlightPerPage.forEach(

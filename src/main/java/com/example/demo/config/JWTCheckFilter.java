@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.user.domain.UserDetailsImpl;
 import com.example.demo.user.domain.UserDetailsServiceImpl;
+import com.example.demo.user.service.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
