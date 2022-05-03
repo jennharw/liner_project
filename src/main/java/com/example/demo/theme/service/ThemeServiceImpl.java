@@ -134,18 +134,19 @@ public class ThemeServiceImpl implements ThemeService {
         //if (myColors.size() > defaultThemeColors.size()){
 
         for (ThemeColor mycolor : myColors){
-            mycolor.setColor(colors.get(0));
-//            i++;
-//            if (i > colors.size()){
-//                i = 0;
-//            }
-        }
 
+            if (i > colors.size()){
+                mycolor.setColor(colors.get(0));
+            }else{
+                mycolor.setColor(colors.get(i));
+                i++;
+            }
+        }
 
         //}
 
 
-        user.get().setTheme(Theme.builder().id(1L).build());
+        //user.get().setTheme(Theme.builder().id(1L).build());
         // 보다 기존이 더 많을 때
         // 사용자 - theme - themecolor
 
