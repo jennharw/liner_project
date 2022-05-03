@@ -63,13 +63,20 @@ public class HighlightServiceImpl implements HighlightService {
 
                     .user(user.get())
                     .linerPage(userpage)
-                    .color(userThemeColors.get())
+                    .orderOfColor(userThemeColors.get().getOrderOfColor())
                     .text(highlightCreateDto.getText())
                     .build();
 
             Highlight highlight_saved = highlightRepository.save(highlight);
 
-            return highlight_saved.toDto();
+            return HighlightResponseDto.builder()
+                    .highlightId(highlight_saved.getId())
+                    .userId(highlight_saved.getUser().getId())
+                    .pageId(highlight_saved.getLinerPage().getId())
+                    .colorHex(userThemeColors.get().getColor())
+                    .text(highlight_saved.getText())
+                    .build();
+           // return highlight_saved.toDto();
         }else{
             throw new BaseException(COLORNOTTHEMECOLOR);
         }
@@ -89,8 +96,10 @@ public class HighlightServiceImpl implements HighlightService {
         if (!highlightUpdateDto.getText().isEmpty()) {
             highlight.get().setText(highlightUpdateDto.getText());
         }
+        Optional<Theme> theme = themeRepository.findByUsers(user.get());
+
         if (!highlightUpdateDto.getColorHex().isEmpty()){
-            Optional<Theme> theme = themeRepository.findByUsers(user.get());
+            //Optional<Theme> theme = themeRepository.findByUsers(user.get());
             List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
 
             if (themeColors.stream().map(ThemeColor::getColor).collect(toList()).contains(highlightUpdateDto.getColorHex())){
@@ -98,12 +107,21 @@ public class HighlightServiceImpl implements HighlightService {
                         highlightUpdateDto.getColorHex()
                 )).findFirst();
 
-                highlight.get().setColor(userThemeColors.get());
+                highlight.get().setOrderOfColor(userThemeColors.get().getOrderOfColor());
 
             }
         }
 
-        return highlight.get().toDto();
+        Optional<ThemeColor> themeColor = themeColorRepository.findByThemeIdAndOrderOfColor(theme.get().getId(),highlight.get().getOrderOfColor());
+
+        return HighlightResponseDto.builder()
+                .highlightId(highlight.get().getId())
+                .userId(highlight.get().getUser().getId())
+                .pageId(highlight.get().getLinerPage().getId())
+                .colorHex(themeColor.get().getColor())
+                .text(highlight.get().getText())
+                .build();
+        //return highlight.get().toDto();
     }
 
     @Override

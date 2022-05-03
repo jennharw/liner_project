@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/theme")
+@RequestMapping("/api/theme")
 public class ThemeController {
     private final ThemeService themeService;
 
