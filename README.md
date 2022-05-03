@@ -12,11 +12,11 @@ DB 설계
 - User 와 Theme N:1  관계 - 하나의 Theme 에 여러 사람 사용 가능
 - Theme 과 ThemeColor 1:N 관계
 
-- Highlight 와 ThemeColor 1:N 관계 
+- Highlight 와 ThemeColor  - order_of_color 로 확인 
 
 
 
-![image](https://user-images.githubusercontent.com/73508138/166233107-195edc02-3594-4f9d-9948-9a81caf9d16e.png)
+![image](https://user-images.githubusercontent.com/73508138/166428756-f7ca6749-a804-4b30-b8df-e6ed9f68cd68.png)
 
 
 
