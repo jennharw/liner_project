@@ -14,12 +14,15 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/highlight")
+@RequestMapping("/api/highlight")
 public class HighlightController {
     private final HighlightService highlightService;
 
+
+
+
     @PostMapping
-    public HighlightResponseDto createHighlight(@RequestBody HighlightCreateDto highlightCreateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws BaseException {
+    public HighlightResponseDto createHighlight(@RequestBody HighlightCreateDto highlightCreateDto) throws BaseException {
         return highlightService.saveHighlight(highlightCreateDto);
     }
 

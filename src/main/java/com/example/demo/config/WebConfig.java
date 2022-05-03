@@ -45,12 +45,12 @@ public class WebConfig extends WebSecurityConfigurerAdapter{
         JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManager(), userService);
         JWTCheckFilter checkFilter = new JWTCheckFilter(authenticationManager(), userService);
 
-        CustomLoginFilter filter = new CustomLoginFilter(authenticationManager());
-        filter.setFilterProcessesUrl("/api/login");
-
-        filter.setAuthenticationSuccessHandler(successHandler());
-        filter.setAuthenticationFailureHandler(failureHandler());
-        filter.afterPropertiesSet();
+//        CustomLoginFilter filter = new CustomLoginFilter(authenticationManager());
+//        filter.setFilterProcessesUrl("/api/login");
+//
+//        filter.setAuthenticationSuccessHandler(successHandler());
+//        filter.setAuthenticationFailureHandler(failureHandler());
+//        filter.afterPropertiesSet();
 
         http
                 .csrf().disable()
@@ -63,32 +63,34 @@ public class WebConfig extends WebSecurityConfigurerAdapter{
 
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(checkFilter, BasicAuthenticationFilter.class)
-                .exceptionHandling()
-                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-
-                    @Override
-                    public void commence(HttpServletRequest request, HttpServletResponse response,
-                                         AuthenticationException authException) throws IOException, ServletException {
-                        String exception = (String)request.getAttribute("exception");
-                        //String errorCode = (String)request.getAttribute("errorCode");
-
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setStatus(403);
-
-                        if (exception == null){
-                            response.getWriter().println("{ \"message\" : \"" + "로그인 하세요"
-                                    + "\", \"code\" : \"" + "required login"
-                                    + "\", \"status\" : " + 404
-                                    + ", \"errors\" : [ ] }");
-                        }else{
-
-                        response.getWriter().println("{ \"message\" : \"" + exception
-                                + "\", \"code\" : \"" + "expired token"
-                                + "\", \"status\" : " + 404
-                                + ", \"errors\" : [ ] }");
-                        }
-                    }});
+//                .exceptionHandling()
+//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+//
+//                    @Override
+//                    public void commence(HttpServletRequest request, HttpServletResponse response,
+//                                         AuthenticationException authException) throws IOException, ServletException {
+//                        String exception = (String)request.getAttribute("exception");
+//                        //String errorCode = (String)request.getAttribute("errorCode");
+//
+//                        response.setContentType("application/json;charset=UTF-8");
+//                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                        response.setStatus(403);
+//
+//                        if (exception == null){
+//                            response.getWriter().println("{ \"message\" : \"" + "로그인 하세요"
+//                                    + "\", \"code\" : \"" + "required login"
+//                                    + "\", \"status\" : " + 404
+//                                    + ", \"errors\" : [ ] }");
+//                        }else{
+//
+//                        response.getWriter().println("{ \"message\" : \"" + exception
+//                                + "\", \"code\" : \"" + "expired token"
+//                                + "\", \"status\" : " + 404
+//                                + ", \"errors\" : [ ] }");
+//                        }
+//                    }
+//})
+        ;
 
 
         http.csrf()

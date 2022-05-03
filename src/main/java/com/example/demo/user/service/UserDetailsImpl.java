@@ -13,6 +13,10 @@ public class UserDetailsImpl implements UserDetails {
         this.user = user;
     }
 
+    public Long getUserId(){
+        return user.getId();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

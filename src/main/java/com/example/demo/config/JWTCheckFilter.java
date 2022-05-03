@@ -40,6 +40,8 @@ public class JWTCheckFilter extends BasicAuthenticationFilter {
             );
             //setDetails(request, authRequest);
             //userToken.setDetails(user);
+
+
             SecurityContextHolder.getContext().setAuthentication(userToken);
             chain.doFilter(request, response);
 

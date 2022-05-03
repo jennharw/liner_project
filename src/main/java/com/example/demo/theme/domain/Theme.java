@@ -22,7 +22,7 @@ public class Theme {
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "theme", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
-    private List<User> userId; //OnetoMany
+    private List<User> users; //OnetoMany
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "theme", cascade = {CascadeType.PERSIST, CascadeType.REMOVE })
     private List<ThemeColor> themeColors; //OnetoMany

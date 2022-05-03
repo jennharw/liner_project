@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,8 +51,8 @@ public class HighlightServiceImpl implements HighlightService {
             userpage = page.get();
         }
 
-        Theme theme = themeRepository.findByUserId(user.get().getId());
-        List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.getId());
+        Optional<Theme> theme = themeRepository.findByUsers(user.get());
+        List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
         if (themeColors.stream().map(ThemeColor::getColor).collect(toList()).contains(highlightCreateDto.getColorHex())){
 
             Optional<ThemeColor> userThemeColors = themeColors.stream().filter(themeColor -> themeColor.getColor().equals(
@@ -59,13 +60,16 @@ public class HighlightServiceImpl implements HighlightService {
             )).findFirst();
 
             Highlight highlight = Highlight.builder()
+
                     .user(user.get())
                     .linerPage(userpage)
                     .color(userThemeColors.get())
                     .text(highlightCreateDto.getText())
                     .build();
 
-            return highlight.toDto();
+            Highlight highlight_saved = highlightRepository.save(highlight);
+
+            return highlight_saved.toDto();
         }else{
             throw new BaseException(COLORNOTTHEMECOLOR);
         }
@@ -86,8 +90,8 @@ public class HighlightServiceImpl implements HighlightService {
             highlight.get().setText(highlightUpdateDto.getText());
         }
         if (!highlightUpdateDto.getColorHex().isEmpty()){
-            Theme theme = themeRepository.findByUserId(user.get().getId());
-            List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.getId());
+            Optional<Theme> theme = themeRepository.findByUsers(user.get());
+            List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
 
             if (themeColors.stream().map(ThemeColor::getColor).collect(toList()).contains(highlightUpdateDto.getColorHex())){
                 Optional<ThemeColor> userThemeColors = themeColors.stream().filter(themeColor -> themeColor.getColor().equals(
@@ -122,21 +126,26 @@ public class HighlightServiceImpl implements HighlightService {
                 //.map(Highlight::toDto)
                     .collect(groupingBy(Highlight::getLinerPage, mapping(Highlight::toDto, toList())))
                     ;
-        List<HighlightReadResponseDto> highlightReadResponseDtos = null;
+        List<HighlightReadResponseDto> highlightReadResponseDtos = new ArrayList<>();
         highlightPerPage.forEach(
-                (key, value) ->
-                        highlightReadResponseDtos.add(
-                                HighlightReadResponseDto.builder()
-                                        .pageId(key.getId())
-                                        .pageUrl(key.getPageUrl())
-                                        .highlights(value)
-                                        .build()
-                        ));
+                (key, value) -> {
+                    HighlightReadResponseDto highlightreadResponseDto = HighlightReadResponseDto.builder()
+                            .pageId(key.getId())
+                            .pageUrl(key.getPageUrl())
+                            .highlights(value)
+                            .build();
+                    highlightReadResponseDtos.add(
+                        highlightreadResponseDto
+                    );
+
+                });
+
         
-        return highlightReadResponseDtos;
+        return highlightReadResponseDtos;//.stream().collect(toList());
     }
 
     @Override
+    @Transactional
     public void deleteHighlight(HighlightDeleteDto highlightDeleteDto) {
         Optional<Highlight> highlight = highlightRepository.findById(highlightDeleteDto.getHighlightId());
         highlight.get().setIsDeleted(true);

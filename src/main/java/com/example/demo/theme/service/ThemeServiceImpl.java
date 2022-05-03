@@ -50,7 +50,7 @@ public class ThemeServiceImpl implements ThemeService {
     @Transactional
     public void upsertTheme(ThemeUpsertDto themeUpsertDto) {
         Optional<User> user = userRepository.findById(themeUpsertDto.getUserId());
-        Theme theme = themeRepository.findByUserId(themeUpsertDto.getUserId());
+        Optional<Theme> theme = themeRepository.findByUsers(user.get());
 //        TypedQuery<ThemeColor> themeColorTypedQuery =
 //                entityManager.createQuery("SELECT s from ThemeColor s where s.id = ?", ThemeColor.class);
 //        List<ThemeColor> themeColors = schoolQuery.getResultList();
@@ -70,7 +70,7 @@ public class ThemeServiceImpl implements ThemeService {
         if (!colors.isEmpty()) {
             for (String color:colors){
                 ThemeColor themeColor = ThemeColor.builder()
-                        .theme(theme)
+                        .theme(theme.get())
                         .color(color)
                         .build();
                 entityManager.persist(themeColor);

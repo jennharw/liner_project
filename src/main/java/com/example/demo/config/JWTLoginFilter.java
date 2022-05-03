@@ -82,7 +82,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+JWTUtil.makeAuthToken(user));
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         //response.getOutputStream().write(objectMapper.registerModule(new JavaTimeModule()).writeValueAsBytes(user));
-        VerifyResult verifyResult = VerifyResult.builder().success(true).username(user.getUsername()).token(access).refresh(refresh).build();
+        VerifyResult verifyResult = VerifyResult.builder().success(true).userId(user.getUserId()).username(user.getUsername()).token(access).refresh(refresh).build();
         response.getOutputStream().write(objectMapper.writeValueAsBytes(verifyResult));
     }
 }
