@@ -56,56 +56,60 @@ public class ThemeServiceImpl implements ThemeService {
 //        List<ThemeColor> themeColors = schoolQuery.getResultList();
 
 
-        List<ThemeColor> themeColors = themeColorRepository.findAll();
+        List<ThemeColor> themeColors = themeColorRepository.findByThemeId(theme.get().getId());
         List<String> colors = List.of(themeUpsertDto.getTheme().getColors());
         int i = 0 ;
+        int j = 0 ;
         for (ThemeColor themeColor : themeColors){
             themeColor.setColor(colors.get(i));
             i++;
+            j++;
             if (i >= colors.size()) {
                 i = 0;
             }
-        }
+        } //bulk update ?
 
-        if (!colors.isEmpty()) {
-            for (String color:colors){
+        j++;
+        if (j < colors.size()) {
+            for (int k = j; k <= colors.size();k++){
+
                 ThemeColor themeColor = ThemeColor.builder()
                         .theme(theme.get())
-                        .color(color)
+                        .orderOfColor(k)
+                        .color(colors.get(k-1))
                         .build();
+
                 entityManager.persist(themeColor);
-
             }
-
         }
 
-        //em.flush(); //bulk
+        //em.flush(); //bulk insert
         //두가지 경우
 
-        List<ThemeColor> themeColorList = themeColorRepository.findAll();
-        if (colorMap.isEmpty()) {
-            Map<Theme, List<String>> colorMap =
-            themeColorList.stream()
-                    .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toList())));
+//        List<ThemeColor> themeColorList = themeColorRepository.findAll();
+//        if (colorMap.isEmpty()) {
+//            Map<Theme, List<String>> colorMap =
+//            themeColorList.stream()
+//                    .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toList())));
+//
+//        }
+//
+//        List<List<String>> colorValues = null;
+//        colorMap.forEach(
+//                (key, value) ->
+//                        colorValues.add(value)
+//                               );
+//
 
-        }
 
-        List<List<String>> colorValues = null;
-        colorMap.forEach(
-                (key, value) ->
-                        colorValues.add(value)
-                               );
-
-
-
-        if (colorValues.contains(colors)) {
-            Long themeId = getKey(colorMap, colors);
-            user.get().setTheme(Theme.builder().id(themeId).build());
-        }
+//        if (colorValues.contains(colors)) {
+//            Long themeId = getKey(colorMap, colors);
+//            user.get().setTheme(Theme.builder().id(themeId).build());
+//        }
         //조합 중복안되게
 
 
-        colorMap.put(themeUpsertDto.getTheme().getId(), colors);
+       // colorMap.put(themeUpsertDto.getTheme().getId(), colors);
 
 
 
