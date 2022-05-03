@@ -57,11 +57,12 @@ public class ThemeServiceImpl implements ThemeService {
             List<ThemeColor> themeColorList = themeColorRepository.findAll();
             colorMap = themeColorList.stream()
                     .collect(groupingBy(ThemeColor::getTheme, mapping(ThemeColor::getColor, toSet())));
-            colorMap.forEach(
-                    (key, value) ->
-                            colorValues.add(value)
-            );
+
         }
+        colorMap.forEach(
+                (key, value) ->
+                        colorValues.add(value)
+        );
 //        System.out.println(colorMap);
         Set<String> colors_set = Set.of(themeUpsertDto.getTheme().getColors());
 
